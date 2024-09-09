@@ -36,13 +36,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle
 
+      # 强制清理 Gradle 缓存，避免损坏的缓存
+      - name: Clear Gradle cache
+        run: ./gradlew clean
+
       # 配置 Android SDK
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
         with:
           api-level: 33
-          ndk: '23.1.7779620' # 根据需要调整版本
+          ndk: '23.1.7779620' # 使用已知的稳定 NDK 版本
           cmake-version: '3.18.1' # 根据需要调整版本
+
+      # 强制下载 NDK
+      - name: Force download NDK
+        run: |
+          rm -rf $ANDROID_NDK_HOME && sdkmanager --install "ndk;23.1.7779620"
 
       # 运行 Gradle 构建任务
       - name: Build module
