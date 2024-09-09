@@ -18,12 +18,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 设置 JDK 环境（更新为 Java 17）
+      # 设置 JDK 环境（Java 17）
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'  # 使用 Java 17
+          java-version: '17'
 
       # 缓存 Gradle 缓存
       - name: Cache Gradle packages
@@ -36,26 +36,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle
 
-      # 强制清理 Gradle 缓存，避免损坏的缓存
-      - name: Clear Gradle cache
-        run: ./gradlew clean
-
       # 配置 Android SDK
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
         with:
           api-level: 33
-          ndk: '23.1.7779620' # 使用已知的稳定 NDK 版本
-          cmake-version: '3.18.1' # 根据需要调整版本
-
-      # 强制下载 NDK
-      - name: Force download NDK
-        run: |
-          rm -rf $ANDROID_NDK_HOME && sdkmanager --install "ndk;23.1.7779620"
+          ndk: '23.1.7779620'  # 根据需要调整版本
+          cmake-version: '3.18.1'  # CMake 版本，视项目需求而定
 
       # 运行 Gradle 构建任务
       - name: Build module
-        run: ./gradlew :zipRelease
+        run: ./gradlew :module:zipRelease  # 确保模块路径正确
 
       # 保存生成的 zip 文件为 GitHub Artifact
       - name: Upload module zip
